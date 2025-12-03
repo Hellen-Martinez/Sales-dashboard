@@ -3,195 +3,316 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sales Analysis Dashboard - Excel Style</title>
+    <title>Inventory Management Dashboard - Dark Premium</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body>
+<body style="margin: 0; padding: 0;">
     <div id="root"></div>
     
     <script type="text/babel">
         const { useState } = React;
         
-        const TrendingUp = () => (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        const AlertTriangle = ({ size = 16, color = "currentColor" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+        );
+        
+        const CheckCircle = ({ size = 16, color = "currentColor" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        );
+        
+        const Clock = ({ size = 16, color = "currentColor" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+        );
+        
+        const TrendingUp = ({ size = 16, color = "currentColor" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
                 <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
                 <polyline points="17 6 23 6 23 12"></polyline>
             </svg>
         );
         
-        const TrendingDown = () => (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
-                <polyline points="17 18 23 18 23 12"></polyline>
+        const Package = ({ size = 16, color = "currentColor" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+                <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"></line>
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+        );
+        
+        const ArrowUp = ({ size = 12, color = "currentColor" }) => (
+            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
             </svg>
         );
 
-        const DollarSign = ({ size = 32 }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="12" y1="1" x2="12" y2="23"></line>
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-            </svg>
-        );
+        const InventoryDashboard = () => {
+            const [selectedView, setSelectedView] = useState('overview');
+            const [hoveredBar, setHoveredBar] = useState(null);
+            const [hoveredRow, setHoveredRow] = useState(null);
 
-        const ShoppingCart = ({ size = 32 }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="9" cy="21" r="1"></circle>
-                <circle cx="20" cy="21" r="1"></circle>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
-        );
-
-        const Users = ({ size = 32 }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-        );
-
-        const Target = ({ size = 32 }) => (
-            <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <circle cx="12" cy="12" r="6"></circle>
-                <circle cx="12" cy="12" r="2"></circle>
-            </svg>
-        );
-
-        const SalesDashboard = () => {
-            const [selectedMonth, setSelectedMonth] = useState('Dec 2024');
-
-            const kpis = [
-                { label: 'Total Revenue', value: '$847,320', change: '+23.4%', trend: 'up', icon: DollarSign },
-                { label: 'Total Orders', value: '12,847', change: '+18.2%', trend: 'up', icon: ShoppingCart },
-                { label: 'Avg Order Value', value: '$65.94', change: '+4.3%', trend: 'up', icon: Target },
-                { label: 'Conversion Rate', value: '3.42%', change: '-0.8%', trend: 'down', icon: Users }
+            const turnoverData = [
+                { month: 'Jan', rate: 6.2 },
+                { month: 'Feb', rate: 6.8 },
+                { month: 'Mar', rate: 7.4 },
+                { month: 'Apr', rate: 7.9 },
+                { month: 'May', rate: 8.6 },
+                { month: 'Jun', rate: 9.2 },
+                { month: 'Jul', rate: 9.8 },
+                { month: 'Aug', rate: 10.4 },
+                { month: 'Sep', rate: 11.1 },
+                { month: 'Oct', rate: 11.5 },
+                { month: 'Nov', rate: 11.3 },
+                { month: 'Dec', rate: 11.8 }
             ];
 
-            const monthlyData = [
-                { month: 'Jan', revenue: 620000 },
-                { month: 'Feb', revenue: 680000 },
-                { month: 'Mar', revenue: 720000 },
-                { month: 'Apr', revenue: 690000 },
-                { month: 'May', revenue: 750000 },
-                { month: 'Jun', revenue: 780000 },
-                { month: 'Jul', revenue: 730000 },
-                { month: 'Aug', revenue: 790000 },
-                { month: 'Sep', revenue: 810000 },
-                { month: 'Oct', revenue: 820000 },
-                { month: 'Nov', revenue: 835000 },
-                { month: 'Dec', revenue: 847320 }
+            const inventoryStatus = [
+                { 
+                    product: 'Premium Wireless Headphones',
+                    sku: 'PWH-001',
+                    current: 342,
+                    reorderPoint: 250,
+                    optimal: 500,
+                    turnover: 12.4,
+                    daysOnHand: 29,
+                    status: 'optimal'
+                },
+                { 
+                    product: 'Smart Watch Series X',
+                    sku: 'SWX-002',
+                    current: 189,
+                    reorderPoint: 200,
+                    optimal: 400,
+                    turnover: 11.8,
+                    daysOnHand: 31,
+                    status: 'reorder'
+                },
+                { 
+                    product: 'Ultra HD Webcam Pro',
+                    sku: 'UHW-003',
+                    current: 67,
+                    reorderPoint: 150,
+                    optimal: 350,
+                    turnover: 15.2,
+                    daysOnHand: 24,
+                    status: 'critical'
+                },
+                { 
+                    product: 'Ergonomic Keyboard Elite',
+                    sku: 'EKE-004',
+                    current: 521,
+                    reorderPoint: 180,
+                    optimal: 380,
+                    turnover: 8.9,
+                    daysOnHand: 41,
+                    status: 'overstock'
+                },
+                { 
+                    product: 'Portable SSD 2TB',
+                    sku: 'PS2-005',
+                    current: 298,
+                    reorderPoint: 220,
+                    optimal: 450,
+                    turnover: 13.1,
+                    daysOnHand: 28,
+                    status: 'optimal'
+                },
+                { 
+                    product: 'Gaming Mouse RGB',
+                    sku: 'GMR-006',
+                    current: 156,
+                    reorderPoint: 180,
+                    optimal: 400,
+                    turnover: 14.6,
+                    daysOnHand: 25,
+                    status: 'reorder'
+                },
+                { 
+                    product: 'USB-C Hub Multiport',
+                    sku: 'UCH-007',
+                    current: 89,
+                    reorderPoint: 200,
+                    optimal: 500,
+                    turnover: 16.8,
+                    daysOnHand: 22,
+                    status: 'critical'
+                },
+                { 
+                    product: 'Laptop Stand Aluminum',
+                    sku: 'LSA-008',
+                    current: 412,
+                    reorderPoint: 150,
+                    optimal: 350,
+                    turnover: 9.4,
+                    daysOnHand: 39,
+                    status: 'overstock'
+                }
             ];
 
-            const topProducts = [
-                { name: 'Premium Wireless Headphones', revenue: 124500, units: 2150, growth: 32 },
-                { name: 'Smart Watch Series X', revenue: 118200, units: 1890, growth: 28 },
-                { name: 'Ultra HD Webcam Pro', revenue: 98700, units: 3280, growth: 45 },
-                { name: 'Ergonomic Keyboard Elite', revenue: 87300, units: 2910, growth: 19 },
-                { name: 'Portable SSD 2TB', revenue: 76800, units: 1920, growth: 38 },
-                { name: 'Gaming Mouse RGB', revenue: 68900, units: 3445, growth: 22 },
-                { name: 'USB-C Hub Multiport', revenue: 62400, units: 4160, growth: 51 },
-                { name: 'Laptop Stand Aluminum', revenue: 54300, units: 2715, growth: 15 },
-                { name: 'Wireless Charger Fast', revenue: 48900, units: 4890, growth: 41 },
-                { name: 'Bluetooth Speaker Mini', revenue: 43200, units: 5400, growth: 29 }
-            ];
+            const statusConfig = {
+                critical: { color: '#E63946', icon: AlertTriangle, label: 'Critical - Order Now' },
+                reorder: { color: '#F77F00', icon: Clock, label: 'Reorder Soon' },
+                optimal: { color: '#06D6A0', icon: CheckCircle, label: 'Optimal Level' },
+                overstock: { color: '#118AB2', icon: Package, label: 'Overstock' }
+            };
 
-            const customerSegments = [
-                { segment: 'Enterprise', percentage: 42, value: 355873 },
-                { segment: 'SMB', percentage: 31, value: 262669 },
-                { segment: 'Individual', percentage: 18, value: 152519 },
-                { segment: 'Reseller', percentage: 9, value: 76259 }
-            ];
+            const criticalCount = inventoryStatus.filter(i => i.status === 'critical').length;
+            const reorderCount = inventoryStatus.filter(i => i.status === 'reorder').length;
+            const optimalCount = inventoryStatus.filter(i => i.status === 'optimal').length;
+            const overstockCount = inventoryStatus.filter(i => i.status === 'overstock').length;
 
-            const maxRevenue = Math.max(...monthlyData.map(d => d.revenue));
+            const maxRate = Math.max(...turnoverData.map(d => d.rate));
 
             return (
                 <div style={{ 
-                    fontFamily: 'Calibri, sans-serif',
-                    backgroundColor: '#f0f0f0',
+                    fontFamily: '"Inter", "SF Pro Display", -apple-system, sans-serif',
+                    backgroundColor: '#0A0E27',
                     minHeight: '100vh',
-                    padding: '24px'
+                    padding: '0',
+                    color: '#E8EAED'
                 }}>
-                    <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+                    <div style={{ 
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        padding: '28px 40px',
+                        borderBottom: '1px solid rgba(255,255,255,0.1)'
+                    }}>
                         <div style={{ 
-                            backgroundColor: '#2f5496',
-                            padding: '20px 32px',
-                            marginBottom: '20px',
-                            borderRadius: '2px'
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
                         }}>
-                            <h1 style={{ 
-                                margin: 0,
-                                color: 'white',
-                                fontSize: '28px',
-                                fontWeight: '600',
-                                letterSpacing: '0.5px'
+                            <div>
+                                <h1 style={{ 
+                                    margin: '0',
+                                    color: 'white',
+                                    fontSize: '32px',
+                                    fontWeight: '700',
+                                    letterSpacing: '-0.5px'
+                                }}>
+                                    Inventory Intelligence
+                                </h1>
+                                <p style={{ 
+                                    margin: '6px 0 0 0',
+                                    color: 'rgba(255,255,255,0.8)',
+                                    fontSize: '14px',
+                                    fontWeight: '500'
+                                }}>
+                                    Real-time stock optimization and predictive analytics
+                                </p>
+                            </div>
+                            <div style={{ 
+                                display: 'flex',
+                                gap: '12px'
                             }}>
-                                Sales Performance Dashboard
-                            </h1>
-                            <p style={{ 
-                                margin: '4px 0 0 0',
-                                color: '#d0dff4',
-                                fontSize: '14px'
-                            }}>
-                                Year 2024 - Comprehensive Sales Analysis
-                            </p>
+                                {['overview', 'analytics', 'alerts'].map((view) => (
+                                    <button
+                                        key={view}
+                                        onClick={() => setSelectedView(view)}
+                                        style={{ 
+                                            padding: '10px 20px',
+                                            backgroundColor: selectedView === view ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)',
+                                            color: 'white',
+                                            border: selectedView === view ? '2px solid white' : '2px solid transparent',
+                                            borderRadius: '8px',
+                                            cursor: 'pointer',
+                                            fontSize: '13px',
+                                            fontWeight: '600',
+                                            textTransform: 'capitalize',
+                                            transition: 'all 0.2s ease',
+                                            backdropFilter: 'blur(10px)'
+                                        }}
+                                    >
+                                        {view}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
+                    </div>
 
+                    <div style={{ padding: '32px 40px' }}>
                         <div style={{ 
                             display: 'grid',
                             gridTemplateColumns: 'repeat(4, 1fr)',
-                            gap: '16px',
-                            marginBottom: '20px'
+                            gap: '20px',
+                            marginBottom: '32px'
                         }}>
-                            {kpis.map((kpi, idx) => {
-                                const Icon = kpi.icon;
+                            {[
+                                { label: 'Critical Items', count: criticalCount, color: '#E63946', icon: AlertTriangle },
+                                { label: 'Reorder Soon', count: reorderCount, color: '#F77F00', icon: Clock },
+                                { label: 'Optimal Stock', count: optimalCount, color: '#06D6A0', icon: CheckCircle },
+                                { label: 'Overstock', count: overstockCount, color: '#118AB2', icon: Package }
+                            ].map((card, idx) => {
+                                const Icon = card.icon;
                                 return (
                                     <div key={idx} style={{ 
-                                        backgroundColor: 'white',
-                                        border: '1px solid #d0d0d0',
-                                        borderRadius: '2px',
-                                        padding: '20px',
-                                        position: 'relative'
-                                    }}>
+                                        background: 'linear-gradient(135deg, #1a1f3a 0%, #0f1729 100%)',
+                                        borderRadius: '16px',
+                                        padding: '24px',
+                                        border: '1px solid rgba(255,255,255,0.1)',
+                                        position: 'relative',
+                                        overflow: 'hidden',
+                                        transition: 'all 0.3s ease',
+                                        cursor: 'pointer',
+                                        transform: 'translateY(0)',
+                                        boxShadow: 'none'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(-4px)';
+                                        e.currentTarget.style.boxShadow = `0 12px 24px ${card.color}40`;
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                        e.currentTarget.style.boxShadow = 'none';
+                                    }}
+                                    >
                                         <div style={{ 
                                             position: 'absolute',
-                                            top: '16px',
-                                            right: '16px',
-                                            color: '#2f5496',
-                                            opacity: 0.2
+                                            top: '-20px',
+                                            right: '-20px',
+                                            opacity: 0.1
                                         }}>
-                                            <Icon size={32} />
+                                            <Icon size={100} color={card.color} />
                                         </div>
-                                        <div style={{ 
-                                            fontSize: '13px',
-                                            color: '#666',
-                                            marginBottom: '8px',
-                                            fontWeight: '500',
-                                            textTransform: 'uppercase',
-                                            letterSpacing: '0.5px'
-                                        }}>
-                                            {kpi.label}
-                                        </div>
-                                        <div style={{ 
-                                            fontSize: '28px',
-                                            fontWeight: '600',
-                                            color: '#2f5496',
-                                            marginBottom: '6px'
-                                        }}>
-                                            {kpi.value}
-                                        </div>
-                                        <div style={{ 
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '4px',
-                                            fontSize: '13px',
-                                            color: kpi.trend === 'up' ? '#28a745' : '#dc3545',
-                                            fontWeight: '500'
-                                        }}>
-                                            {kpi.trend === 'up' ? <TrendingUp /> : <TrendingDown />}
-                                            {kpi.change} vs last month
+                                        <div style={{ position: 'relative', zIndex: 1 }}>
+                                            <div style={{ 
+                                                display: 'inline-flex',
+                                                padding: '8px',
+                                                backgroundColor: `${card.color}20`,
+                                                borderRadius: '10px',
+                                                marginBottom: '12px'
+                                            }}>
+                                                <Icon size={20} color={card.color} />
+                                            </div>
+                                            <div style={{ 
+                                                fontSize: '36px',
+                                                fontWeight: '700',
+                                                color: card.color,
+                                                marginBottom: '6px',
+                                                lineHeight: '1'
+                                            }}>
+                                                {card.count}
+                                            </div>
+                                            <div style={{ 
+                                                fontSize: '13px',
+                                                color: 'rgba(255,255,255,0.6)',
+                                                fontWeight: '500',
+                                                letterSpacing: '0.3px'
+                                            }}>
+                                                {card.label}
+                                            </div>
                                         </div>
                                     </div>
                                 );
@@ -199,229 +320,360 @@
                         </div>
 
                         <div style={{ 
-                            backgroundColor: 'white',
-                            border: '1px solid #d0d0d0',
-                            borderRadius: '2px',
-                            padding: '24px',
+                            display: 'grid',
+                            gridTemplateColumns: '1.3fr 0.7fr',
+                            gap: '20px',
                             marginBottom: '20px'
                         }}>
-                            <h2 style={{ 
-                                margin: '0 0 20px 0',
-                                fontSize: '18px',
-                                fontWeight: '600',
-                                color: '#2f5496',
-                                borderBottom: '2px solid #2f5496',
-                                paddingBottom: '8px'
+                            <div style={{ 
+                                background: 'linear-gradient(135deg, #1a1f3a 0%, #0f1729 100%)',
+                                borderRadius: '16px',
+                                padding: '28px',
+                                border: '1px solid rgba(255,255,255,0.1)'
                             }}>
-                                Monthly Revenue Trend
-                            </h2>
+                                <div style={{ 
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    marginBottom: '24px'
+                                }}>
+                                    <h2 style={{ 
+                                        margin: 0,
+                                        fontSize: '18px',
+                                        fontWeight: '700',
+                                        color: 'white',
+                                        letterSpacing: '-0.3px'
+                                    }}>
+                                        Inventory Turnover Rate
+                                    </h2>
+                                    <div style={{ 
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        padding: '8px 16px',
+                                        backgroundColor: '#06D6A020',
+                                        borderRadius: '20px',
+                                        border: '1px solid #06D6A040'
+                                    }}>
+                                        <TrendingUp size={16} color="#06D6A0" />
+                                        <span style={{ 
+                                            fontSize: '13px',
+                                            fontWeight: '700',
+                                            color: '#06D6A0'
+                                        }}>
+                                            +82% YoY
+                                        </span>
+                                    </div>
+                                </div>
+                                <div style={{ 
+                                    display: 'flex',
+                                    alignItems: 'flex-end',
+                                    justifyContent: 'space-between',
+                                    height: '240px',
+                                    gap: '6px'
+                                }}>
+                                    {turnoverData.map((data, idx) => (
+                                        <div key={idx} style={{ 
+                                            flex: 1,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            gap: '8px',
+                                            position: 'relative'
+                                        }}>
+                                            <div style={{ 
+                                                fontSize: '10px',
+                                                color: 'rgba(255,255,255,0.5)',
+                                                fontWeight: '600'
+                                            }}>
+                                                {data.rate.toFixed(1)}
+                                            </div>
+                                            <div 
+                                                style={{ 
+                                                    width: '100%',
+                                                    background: hoveredBar === idx 
+                                                        ? 'linear-gradient(to top, #667eea, #764ba2)' 
+                                                        : `linear-gradient(to top, ${idx === turnoverData.length - 1 ? '#667eea' : '#667eea80'}, ${idx === turnoverData.length - 1 ? '#764ba2' : '#764ba280'})`,
+                                                    height: `${(data.rate / maxRate) * 180}px`,
+                                                    borderRadius: '6px 6px 0 0',
+                                                    position: 'relative',
+                                                    transition: 'all 0.3s ease',
+                                                    cursor: 'pointer',
+                                                    boxShadow: idx === turnoverData.length - 1 ? '0 4px 12px rgba(118, 75, 162, 0.4)' : 'none',
+                                                    transform: hoveredBar === idx ? 'scaleY(1.1)' : 'scaleY(1)',
+                                                    filter: hoveredBar === idx ? 'brightness(1.2)' : 'brightness(1)'
+                                                }}
+                                                onMouseEnter={() => setHoveredBar(idx)}
+                                                onMouseLeave={() => setHoveredBar(null)}
+                                            />
+                                            <div style={{ 
+                                                fontSize: '11px',
+                                                color: 'rgba(255,255,255,0.7)',
+                                                fontWeight: '600'
+                                            }}>
+                                                {data.month}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
                             <div style={{ 
                                 display: 'flex',
-                                alignItems: 'flex-end',
-                                justifyContent: 'space-between',
-                                height: '280px',
-                                gap: '12px',
-                                padding: '20px 0'
+                                flexDirection: 'column',
+                                gap: '20px'
                             }}>
-                                {monthlyData.map((data, idx) => (
-                                    <div key={idx} style={{ 
-                                        flex: 1,
+                                <div style={{ 
+                                    background: 'linear-gradient(135deg, #1a1f3a 0%, #0f1729 100%)',
+                                    borderRadius: '16px',
+                                    padding: '24px',
+                                    border: '1px solid rgba(255,255,255,0.1)'
+                                }}>
+                                    <h3 style={{ 
+                                        margin: '0 0 20px 0',
+                                        fontSize: '16px',
+                                        fontWeight: '700',
+                                        color: 'white',
+                                        letterSpacing: '-0.3px'
+                                    }}>
+                                        Performance Metrics
+                                    </h3>
+                                    <div style={{ 
                                         display: 'flex',
                                         flexDirection: 'column',
+                                        gap: '16px'
+                                    }}>
+                                        {[
+                                            { label: 'Avg Days on Hand', value: '31', color: '#667eea' },
+                                            { label: 'Stock-Out Rate', value: '4.8%', color: '#06D6A0' },
+                                            { label: 'Carrying Cost', value: '$2.4M', color: '#F77F00' }
+                                        ].map((metric, idx) => (
+                                            <div key={idx}>
+                                                <div style={{ 
+                                                    display: 'flex',
+                                                    justifyContent: 'space-between',
+                                                    marginBottom: '8px'
+                                                }}>
+                                                    <span style={{ 
+                                                        fontSize: '12px',
+                                                        color: 'rgba(255,255,255,0.6)',
+                                                        fontWeight: '600'
+                                                    }}>
+                                                        {metric.label}
+                                                    </span>
+                                                    <span style={{ 
+                                                        fontSize: '16px',
+                                                        color: metric.color,
+                                                        fontWeight: '700'
+                                                    }}>
+                                                        {metric.value}
+                                                    </span>
+                                                </div>
+                                                <div style={{ 
+                                                    height: '8px',
+                                                    backgroundColor: 'rgba(255,255,255,0.05)',
+                                                    borderRadius: '4px',
+                                                    overflow: 'hidden'
+                                                }}>
+                                                    <div style={{ 
+                                                        height: '100%',
+                                                        width: '72%',
+                                                        background: `linear-gradient(to right, ${metric.color}, ${metric.color}CC)`,
+                                                        borderRadius: '4px',
+                                                        transition: 'width 1s ease'
+                                                    }} />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div style={{ 
+                                    background: 'linear-gradient(135deg, #E6394620 0%, #E6394610 100%)',
+                                    borderRadius: '16px',
+                                    padding: '20px',
+                                    border: '1px solid #E6394640'
+                                }}>
+                                    <h3 style={{ 
+                                        margin: '0 0 12px 0',
+                                        fontSize: '14px',
+                                        fontWeight: '700',
+                                        color: '#E63946',
+                                        display: 'flex',
                                         alignItems: 'center',
                                         gap: '8px'
                                     }}>
-                                        <div style={{ 
-                                            fontSize: '11px',
-                                            color: '#666',
-                                            fontWeight: '500',
-                                            textAlign: 'center'
-                                        }}>
-                                            ${(data.revenue / 1000).toFixed(0)}K
-                                        </div>
-                                        <div style={{ 
-                                            width: '100%',
-                                            backgroundColor: idx === monthlyData.length - 1 ? '#2f5496' : '#5b9bd5',
-                                            height: `${(data.revenue / maxRevenue) * 220}px`,
-                                            borderRadius: '3px 3px 0 0',
-                                            transition: 'all 0.3s ease',
-                                            cursor: 'pointer'
-                                        }} />
-                                        <div style={{ 
-                                            fontSize: '12px',
-                                            color: '#333',
-                                            fontWeight: '500'
-                                        }}>
-                                            {data.month}
-                                        </div>
+                                        <AlertTriangle size={18} color="#E63946" />
+                                        Urgent Actions
+                                    </h3>
+                                    <div style={{ 
+                                        fontSize: '12px',
+                                        color: 'rgba(255,255,255,0.7)',
+                                        lineHeight: '1.6'
+                                    }}>
+                                        2 items below critical threshold
+                                        <br />
+                                        Reorder recommended for 2 products
                                     </div>
-                                ))}
+                                </div>
                             </div>
                         </div>
 
                         <div style={{ 
-                            display: 'grid',
-                            gridTemplateColumns: '1.2fr 0.8fr',
-                            gap: '20px'
+                            background: 'linear-gradient(135deg, #1a1f3a 0%, #0f1729 100%)',
+                            borderRadius: '16px',
+                            padding: '28px',
+                            border: '1px solid rgba(255,255,255,0.1)'
                         }}>
-                            <div style={{ 
-                                backgroundColor: 'white',
-                                border: '1px solid #d0d0d0',
-                                borderRadius: '2px',
-                                padding: '24px'
+                            <h2 style={{ 
+                                margin: '0 0 24px 0',
+                                fontSize: '18px',
+                                fontWeight: '700',
+                                color: 'white',
+                                letterSpacing: '-0.3px'
                             }}>
-                                <h2 style={{ 
-                                    margin: '0 0 20px 0',
-                                    fontSize: '18px',
-                                    fontWeight: '600',
-                                    color: '#2f5496',
-                                    borderBottom: '2px solid #2f5496',
-                                    paddingBottom: '8px'
-                                }}>
-                                    Top 10 Products by Revenue
-                                </h2>
+                                Product Inventory Status
+                            </h2>
+                            <div style={{ 
+                                display: 'grid',
+                                gap: '10px'
+                            }}>
                                 <div style={{ 
                                     display: 'grid',
-                                    gap: '12px'
+                                    gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1.2fr',
+                                    gap: '16px',
+                                    padding: '14px 20px',
+                                    backgroundColor: 'rgba(255,255,255,0.03)',
+                                    borderRadius: '10px',
+                                    fontSize: '11px',
+                                    fontWeight: '700',
+                                    color: 'rgba(255,255,255,0.5)',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.8px'
                                 }}>
-                                    {topProducts.map((product, idx) => (
-                                        <div key={idx} style={{ 
-                                            display: 'grid',
-                                            gridTemplateColumns: '1fr 120px 100px 80px',
-                                            alignItems: 'center',
-                                            gap: '12px',
-                                            padding: '10px',
-                                            backgroundColor: idx % 2 === 0 ? '#f8f9fa' : 'white',
-                                            borderLeft: '3px solid #2f5496'
-                                        }}>
-                                            <div style={{ 
-                                                fontSize: '13px',
-                                                color: '#333',
-                                                fontWeight: '500'
-                                            }}>
-                                                {product.name}
-                                            </div>
-                                            <div style={{ 
-                                                fontSize: '14px',
-                                                color: '#2f5496',
-                                                fontWeight: '600'
-                                            }}>
-                                                ${product.revenue.toLocaleString()}
-                                            </div>
-                                            <div style={{ 
-                                                fontSize: '12px',
-                                                color: '#666'
-                                            }}>
-                                                {product.units.toLocaleString()} units
-                                            </div>
-                                            <div style={{ 
-                                                fontSize: '12px',
-                                                color: '#28a745',
-                                                fontWeight: '600',
-                                                textAlign: 'right'
-                                            }}>
-                                                +{product.growth}%
-                                            </div>
-                                        </div>
-                                    ))}
+                                    <div>Product</div>
+                                    <div style={{ textAlign: 'center' }}>Current</div>
+                                    <div style={{ textAlign: 'center' }}>Turnover</div>
+                                    <div style={{ textAlign: 'center' }}>Days</div>
+                                    <div style={{ textAlign: 'center' }}>Stock Level</div>
+                                    <div style={{ textAlign: 'center' }}>Status</div>
                                 </div>
-                            </div>
-
-                            <div style={{ 
-                                backgroundColor: 'white',
-                                border: '1px solid #d0d0d0',
-                                borderRadius: '2px',
-                                padding: '24px'
-                            }}>
-                                <h2 style={{ 
-                                    margin: '0 0 20px 0',
-                                    fontSize: '18px',
-                                    fontWeight: '600',
-                                    color: '#2f5496',
-                                    borderBottom: '2px solid #2f5496',
-                                    paddingBottom: '8px'
-                                }}>
-                                    Customer Segmentation
-                                </h2>
-                                <div style={{ 
-                                    display: 'grid',
-                                    gap: '20px'
-                                }}>
-                                    {customerSegments.map((seg, idx) => (
-                                        <div key={idx}>
-                                            <div style={{ 
-                                                display: 'flex',
-                                                justifyContent: 'space-between',
-                                                marginBottom: '8px'
-                                            }}>
-                                                <span style={{ 
-                                                    fontSize: '13px',
-                                                    color: '#333',
-                                                    fontWeight: '600'
-                                                }}>
-                                                    {seg.segment}
-                                                </span>
-                                                <span style={{ 
-                                                    fontSize: '13px',
-                                                    color: '#2f5496',
-                                                    fontWeight: '600'
-                                                }}>
-                                                    {seg.percentage}%
-                                                </span>
-                                            </div>
-                                            <div style={{ 
-                                                width: '100%',
-                                                height: '28px',
-                                                backgroundColor: '#e9ecef',
-                                                borderRadius: '2px',
-                                                overflow: 'hidden'
-                                            }}>
+                                {inventoryStatus.map((item, idx) => {
+                                    const config = statusConfig[item.status];
+                                    const Icon = config.icon;
+                                    const stockPercentage = (item.current / item.optimal) * 100;
+                                    
+                                    return (
+                                        <div 
+                                            key={idx} 
+                                            style={{ 
+                                                display: 'grid',
+                                                gridTemplateColumns: '2fr 1fr 1fr 1fr 1fr 1.2fr',
+                                                gap: '16px',
+                                                padding: '18px 20px',
+                                                backgroundColor: hoveredRow === idx ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.02)',
+                                                borderRadius: '10px',
+                                                alignItems: 'center',
+                                                borderLeft: `4px solid ${config.color}`,
+                                                transition: 'all 0.2s ease',
+                                                cursor: 'pointer',
+                                                transform: hoveredRow === idx ? 'translateX(4px)' : 'translateX(0)'
+                                            }}
+                                            onMouseEnter={() => setHoveredRow(idx)}
+                                            onMouseLeave={() => setHoveredRow(null)}
+                                        >
+                                            <div>
                                                 <div style={{ 
-                                                    width: `${seg.percentage}%`,
-                                                    height: '100%',
-                                                    backgroundColor: ['#2f5496', '#5b9bd5', '#70ad47', '#ffc000'][idx],
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    paddingLeft: '8px',
-                                                    fontSize: '12px',
+                                                    fontSize: '14px',
                                                     color: 'white',
                                                     fontWeight: '600',
-                                                    transition: 'width 1s ease'
+                                                    marginBottom: '3px'
                                                 }}>
-                                                    ${seg.value.toLocaleString()}
+                                                    {item.product}
+                                                </div>
+                                                <div style={{ 
+                                                    fontSize: '11px',
+                                                    color: 'rgba(255,255,255,0.4)',
+                                                    fontFamily: 'monospace'
+                                                }}>
+                                                    {item.sku}
                                                 </div>
                                             </div>
+                                            <div style={{ 
+                                                textAlign: 'center',
+                                                fontSize: '15px',
+                                                color: 'white',
+                                                fontWeight: '700'
+                                            }}>
+                                                {item.current}
+                                            </div>
+                                            <div style={{ 
+                                                textAlign: 'center',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '4px'
+                                            }}>
+                                                <span style={{ 
+                                                    fontSize: '15px',
+                                                    color: '#667eea',
+                                                    fontWeight: '700'
+                                                }}>
+                                                    {item.turnover}x
+                                                </span>
+                                                <ArrowUp size={12} color="#06D6A0" />
+                                            </div>
+                                            <div style={{ 
+                                                textAlign: 'center',
+                                                fontSize: '13px',
+                                                color: 'rgba(255,255,255,0.7)',
+                                                fontWeight: '600'
+                                            }}>
+                                                {item.daysOnHand}d
+                                            </div>
+                                            <div style={{ 
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>
+                                                <div style={{ 
+                                                    width: '100%',
+                                                    height: '8px',
+                                                    backgroundColor: 'rgba(255,255,255,0.1)',
+                                                    borderRadius: '4px',
+                                                    overflow: 'hidden'
+                                                }}>
+                                                    <div style={{ 
+                                                        height: '100%',
+                                                        width: `${Math.min(stockPercentage, 100)}%`,
+                                                        backgroundColor: config.color,
+                                                        borderRadius: '4px',
+                                                        transition: 'width 1s ease'
+                                                    }} />
+                                                </div>
+                                            </div>
+                                            <div style={{ 
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                gap: '6px',
+                                                padding: '6px 12px',
+                                                backgroundColor: `${config.color}20`,
+                                                borderRadius: '8px',
+                                                border: `1px solid ${config.color}40`
+                                            }}>
+                                                <Icon size={14} color={config.color} />
+                                                <span style={{ 
+                                                    fontSize: '11px',
+                                                    color: config.color,
+                                                    fontWeight: '700'
+                                                }}>
+                                                    {config.label}
+                                                </span>
+                                            </div>
                                         </div>
-                                    ))}
-                                </div>
-                                
-                                <div style={{ 
-                                    marginTop: '28px',
-                                    padding: '16px',
-                                    backgroundColor: '#fff3cd',
-                                    border: '1px solid #ffc107',
-                                    borderRadius: '2px'
-                                }}>
-                                    <h3 style={{ 
-                                        margin: '0 0 10px 0',
-                                        fontSize: '14px',
-                                        fontWeight: '600',
-                                        color: '#856404'
-                                    }}>
-                                        Key Insights
-                                    </h3>
-                                    <ul style={{ 
-                                        margin: 0,
-                                        paddingLeft: '20px',
-                                        fontSize: '12px',
-                                        color: '#856404',
-                                        lineHeight: '1.8'
-                                    }}>
-                                        <li>Enterprise segment drives 42% of total revenue</li>
-                                        <li>Premium products show 32% growth rate</li>
-                                        <li>Q4 revenue exceeded target by 23.4%</li>
-                                    </ul>
-                                </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
@@ -429,7 +681,7 @@
             );
         };
 
-        ReactDOM.render(<SalesDashboard />, document.getElementById('root'));
+        ReactDOM.render(<InventoryDashboard />, document.getElementById('root'));
     </script>
 </body>
 </html>
